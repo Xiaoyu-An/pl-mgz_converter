@@ -218,9 +218,7 @@ class Mgz_converter(ChrisApp):
         print('Finished converting images')
 
     def convert_to_jpeg(self,options):
-	
-
-	dirs=[d for d in os.listdir(options.inputdir) if os.path.isdir(d)]
+        dirs=[d for d in os.listdir(options.inputdir) if os.path.isdir(d)]
         for i in tqdm(dirs):
             # converting mgz to numpy
             img = nib.load(options.inputdir + "/" + i + "/brain.mgz")
