@@ -218,7 +218,8 @@ class Mgz_converter(ChrisApp):
         print('Finished converting images')
 
     def convert_to_jpeg(self,options):
-        dirs=[d for d in os.listdir(options.inputdir) if os.path.isdir(d)]
+        path=options.inputdir
+        dirs=[d for d in os.listdir(path) if os.path.isdir(os.path.join(path,d))]
         for i in tqdm(dirs):
             # converting mgz to numpy
             img = nib.load(options.inputdir + "/" + i + "/brain.mgz")
@@ -233,7 +234,8 @@ class Mgz_converter(ChrisApp):
             self.convert_nifti_to_png(y_nifti.get_data(),options.outputdir + "/label_images/" + i+"y")
 
     def convert_to_npy(self,options):
-        dirs=[d for d in os.listdir(options.inputdir) if os.path.isdir(d)]
+        path=options.inputdir
+        dirs=[d for d in os.listdir(path) if os.path.isdir(os.path.join(path,d))]
         for i in tqdm(dirs):
             img = nib.load(options.inputdir + "/" + i + "/brain.mgz")
             img1 = nib.load(options.inputdir + "/" + i + "/aparc.a2009s+aseg.mgz")
