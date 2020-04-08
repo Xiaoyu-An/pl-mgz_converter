@@ -19,6 +19,7 @@ import imageio
 import os
 import scipy
 from tqdm import tqdm
+from data3D import create_train_data
 
 sys.path.append(os.path.dirname(__file__))
 
@@ -109,10 +110,10 @@ class Mgz_converter(ChrisApp):
     SELFPATH                = os.path.dirname(os.path.abspath(__file__))
     SELFEXEC                = os.path.basename(__file__)
     EXECSHELL               = 'python3'
-    TITLE                   = 'A ChRIS plugin app'
+    TITLE                   = 'A ChRIS plugin app to convert .mgz files to .png & .npy '
     CATEGORY                = ''
     TYPE                    = 'ds'
-    DESCRIPTION             = 'An app to ...'
+    DESCRIPTION             = 'An app to prepare .mgz files for training & testing'
     DOCUMENTATION           = 'http://wiki'
     VERSION                 = '0.1'
     ICON                    = '' # url of an icon image
@@ -145,28 +146,31 @@ class Mgz_converter(ChrisApp):
         Use self.add_argument to specify a new app argument.
         """
 
-        self.add_argument('--conversion_type', dest='conversion_type', type=str, optional=False,
-                          help='which type of conversion you want 1. To jpg 2. To numpy')
-
     def run(self, options):
         """
         Define the code to be run by this plugin app.
         """
 
         try:
-            os.mkdir(options.outputdir + "/input_images")
-            os.mkdir(options.outputdir + "/label_images")
+            os.mkdir(options.outputdir + "/train")
+            os.mkdir(options.outputdir + "/masks")
 
         except OSError:
             print ("Output folders already exist")
         print(os.getcwd())
 
-        if options.conversion_type == "1":
-            self.convert_to_jpeg(options)
-        elif options.conversion_type == "2":
-        	self.convert_to_npy(options)
-        else:
-        	print("You have selected invalid option for conversion")
+        # Slice the .mgz file to 256 .png files
+        # Preprocess the .png files to create  a giant .npy file for training
+        self.convert_to_jpeg(options)
+        self.preprocess(options)
+
+    """
+    Prepare PNG files for training by converting them
+    into .npy files
+    """
+    def preprocess(self,options):
+        create_train_data(options)
+
 
     def convert_nifti_to_png(self,new_image,output_name):
         # converting nifti to .png
@@ -230,17 +234,18 @@ class Mgz_converter(ChrisApp):
             X_nifti= nib.Nifti1Image(X_numpy, affine=np.eye(4))
             y_nifti= nib.Nifti1Image(y_numpy, affine=np.eye(4))
             # converting nifti to png
-            self.convert_nifti_to_png(X_nifti.get_data(),options.outputdir + "/input_images/" + i+"X")
-            self.convert_nifti_to_png(y_nifti.get_data(),options.outputdir + "/label_images/" + i+"y")
+            self.convert_nifti_to_png(X_nifti.get_data(),options.outputdir + "/train/" + i)
+            self.convert_nifti_to_png(y_nifti.get_data(),options.outputdir + "/masks/" + i)
 
+    #### OBSOLETE CODE : Might require in future ####
     def convert_to_npy(self,options):
         path=options.inputdir
         dirs=[d for d in os.listdir(path) if os.path.isdir(os.path.join(path,d))]
         for i in tqdm(dirs):
             img = nib.load(options.inputdir + "/" + i + "/brain.mgz")
             img1 = nib.load(options.inputdir + "/" + i + "/aparc.a2009s+aseg.mgz")
-            file = open(options.outputdir +"/input_images/" + i + ".npy", "wb")
-            file1 = open(options.outputdir + "/label_images/" +i + ".npy","wb")
+            file = open(options.outputdir +"/train/" + i + ".npy", "wb")
+            file1 = open(options.outputdir + "/masks/" +i + ".npy","wb")
             np.save(file1, img1.get_data())
             np.save(file, img.get_data())
 
