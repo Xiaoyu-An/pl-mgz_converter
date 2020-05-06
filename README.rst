@@ -69,7 +69,7 @@ Now, prefix all calls with
 .. code:: bash
     mkdir in out && chmod 777 out
     docker run --rm -v $(pwd)/out:/outgoing                                                                 \
-            pl-mgz_converter mgz_converter.py                           \
+            mgz_converter mgz_converter.py                           \
             /incoming /outgoing                                                                             
 
 Thus, getting inline help is:
@@ -78,7 +78,7 @@ Thus, getting inline help is:
 
     mkdir in out && chmod 777 out
     docker run --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing                                          \
-            pl-mgz_converter mgz_converter.py                       \
+            mgz_converter mgz_converter.py                       \
             --man                                                                                           \
             /incoming /outgoing
 
@@ -92,7 +92,7 @@ Convert mgz images to png & .npy
 
     mkdir in out && chmod 777 out
     docker run --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing                                   \
-            pl-mgz_converter mgz_converter.py                                    \
+            mgz_converter mgz_converter.py                                    \
             /incoming /outgoing   
 
 
