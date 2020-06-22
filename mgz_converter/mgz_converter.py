@@ -177,7 +177,7 @@ class Mgz_converter(ChrisApp):
         ask_rotate_num=90
         outputfile=output_name
         inputfile='input'
-        ask_rotate='y'
+        ask_rotate='n'
         nx, ny, nz = new_image.shape
 
         if not os.path.exists(outputfile):
@@ -204,6 +204,9 @@ class Mgz_converter(ChrisApp):
                             data = np.rot90(np.rot90(np.rot90(new_image[:, :, current_slice])))
                 elif ask_rotate.lower() == 'n':
                     data = new_image[:, :, current_slice]
+                 
+                # prevents lossy conversion
+                data=data.astype(np.uint8)
 
                 #alternate slices and save as png
                 if (slice_counter % 1) == 0:
