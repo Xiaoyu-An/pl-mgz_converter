@@ -42,7 +42,7 @@ def create_train_data(options):
             img = img.astype(np.uint8)
             # info = np.iinfo(img.dtype) # Get the information of the incoming image type
             # img = img.astype(np.uint16) / info.max # normalize the data to 0 - 1
-            img=255. * img
+            # img=255. * img
             img = np.array([img])
             imgs_temp[i,j] = img
             j += 1
@@ -67,8 +67,8 @@ def create_train_data(options):
         for mask_name in images:
             img_mask= imread(dirr+'/'+mask_name,as_gray=True)
             
-            info = np.iinfo(img_mask.dtype) # Get the information of the incoming image type
-            img_mask = img_mask.astype(np.uint16)
+            #info = np.iinfo(img_mask.dtype) # Get the information of the incoming image type
+            img_mask = img_mask.astype(np.uint8)
             # img_mask = img_mask.astype(np.uint16) / info.max # normalize the data to 0 - 1
             # img_mask = 255. * img_mask
 
