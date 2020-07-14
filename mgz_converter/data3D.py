@@ -22,11 +22,11 @@ def create_train_data(options):
     dirs = os.listdir(train_data_path)
     total = int(len(dirs)*16*2)
 
-    imgs = np.ndarray((total, image_depth, image_rows, image_cols), dtype=np.uint8)
-    imgs_mask = np.ndarray((total, image_depth, image_rows, image_cols), dtype=np.uint8)
+    imgs = np.ndarray((total, image_depth, image_rows, image_cols), dtype=np.uint16)
+    imgs_mask = np.ndarray((total, image_depth, image_rows, image_cols), dtype=np.uint16)
 
-    imgs_temp = np.ndarray((total, image_depth//2, image_rows, image_cols), dtype=np.uint8)
-    imgs_mask_temp = np.ndarray((total, image_depth//2, image_rows, image_cols), dtype=np.uint8)
+    imgs_temp = np.ndarray((total, image_depth//2, image_rows, image_cols), dtype=np.uint16)
+    imgs_mask_temp = np.ndarray((total, image_depth//2, image_rows, image_cols), dtype=np.uint16)
 
     i = 0
     print('-'*30)
@@ -39,7 +39,7 @@ def create_train_data(options):
         count = total
         for image_name in images:
             img = imread(os.path.join(dirr, image_name), as_gray=True)
-            img = img.astype(np.uint8)
+            img = img.astype(np.uint16)
             # info = np.iinfo(img.dtype) # Get the information of the incoming image type
             # img = img.astype(np.uint16) / info.max # normalize the data to 0 - 1
             # img=255. * img
@@ -68,7 +68,7 @@ def create_train_data(options):
             img_mask= imread(dirr+'/'+mask_name,as_gray=True)
             
             #info = np.iinfo(img_mask.dtype) # Get the information of the incoming image type
-            img_mask = img_mask.astype(np.uint8)
+            img_mask = img_mask.astype(np.uint16)
             # img_mask = img_mask.astype(np.uint16) / info.max # normalize the data to 0 - 1
             # img_mask = 255. * img_mask
 
