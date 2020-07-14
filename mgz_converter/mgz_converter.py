@@ -206,7 +206,7 @@ class Mgz_converter(ChrisApp):
                     data = new_image[:, :, current_slice]
                  
                 # prevents lossy conversion
-                data=data.astype(np.uint8)
+                data=data.astype(np.uint16)
 
                 #alternate slices and save as png
                 if (slice_counter % 1) == 0:
