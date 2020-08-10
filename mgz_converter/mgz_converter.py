@@ -202,8 +202,13 @@ class Mgz_converter(ChrisApp):
         dcount =0
         for label in labels:
             dictionary[dcount]=label
-            dcount=dcount+1 
-
+            dcount=dcount+1
+            
+        
+        if "mask" in output_name:
+            for kv in dictionary:
+                new_image[new_image==dictionary[kv]]= kv
+            
         total_slices = new_image.shape[2]
 
         slice_counter = 0
@@ -224,8 +229,8 @@ class Mgz_converter(ChrisApp):
                     data = new_image[:, :, current_slice]
                  
                 
-                if "mask" in output_name:
-                    data=self.convert_key(dictionary,data)
+                #if "mask" in output_name:
+                    #data=self.convert_key(dictionary,data)
                     
                 # prevents lossy conversion
                 data = data.astype(np.uint8)
