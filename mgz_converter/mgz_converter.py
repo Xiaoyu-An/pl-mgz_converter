@@ -170,6 +170,13 @@ class Mgz_converter(ChrisApp):
     """
     def preprocess(self,options):
         create_train_data(options)
+        
+    # convert label ranges from 0-255
+    def convert_key(self,dictionary,data):
+        for i in range(0,255):
+            for j in range(0,255):
+                data[i][j]=list(dictionary.keys())[list(dictionary.values()).index(data[i][j])]
+        return data
 
 
     def convert_nifti_to_png(self,new_image,output_name):
@@ -185,6 +192,17 @@ class Mgz_converter(ChrisApp):
             print("Created ouput directory: " + outputfile)
 
         print('Reading NIfTI file...')
+        
+        # get all the labels present
+        labels =[]
+        labels = np.unique(new_image.astype(np.uint16))
+        
+        # now create a dictionary from the labels
+        dictionary={}
+        dcount =0
+        for label in labels:
+            dictionary[dcount]=label
+            dcount=dcount+1 
 
         total_slices = new_image.shape[2]
 
@@ -205,8 +223,12 @@ class Mgz_converter(ChrisApp):
                 elif ask_rotate.lower() == 'n':
                     data = new_image[:, :, current_slice]
                  
+                
+                if "mask" in output_name:
+                    data=self.convert_key(dictionary,data)
+                    
                 # prevents lossy conversion
-                data=data.astype(np.uint8)
+                data = data.astype(np.uint8)
 
                 #alternate slices and save as png
                 if (slice_counter % 1) == 0:
@@ -231,14 +253,12 @@ class Mgz_converter(ChrisApp):
             # converting mgz to numpy
             img = nib.load(options.inputdir + "/" + i + "/brain.mgz")
             img1 = nib.load(options.inputdir + "/" + i + "/aparc.a2009s+aseg.mgz")
-            X_numpy=img.get_data()
-            y_numpy=img1.get_data()
-            # converting numpy to nifti
-            X_nifti= nib.Nifti1Image(X_numpy, affine=np.eye(4))
-            y_nifti= nib.Nifti1Image(y_numpy, affine=np.eye(4))
+            X_numpy=img.get_fdata()
+            y_numpy=img1.get_fdata()
+            
             # converting nifti to png
-            self.convert_nifti_to_png(X_nifti.get_data(),options.outputdir + "/train/" + i)
-            self.convert_nifti_to_png(y_nifti.get_data(),options.outputdir + "/masks/" + i)
+            self.convert_nifti_to_png(X_numpy,options.outputdir + "/train/" + i)
+            self.convert_nifti_to_png(y_numpy,options.outputdir + "/masks/" + i)
 
     #### OBSOLETE CODE : Might require in future ####
     def convert_to_npy(self,options):
